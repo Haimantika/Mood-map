@@ -24,7 +24,7 @@ A web-based interactive tool for creating drawings, based on mood. This can help
 
 ```bash
 # Clone the repository
-git clone [repository-url]
+git clone https://github.com/{username}/Mood-map
 
 # Install dependencies
 cd mood-map
@@ -53,4 +53,4 @@ npm run dev
 - High contrast color options
 
 ## License
-[MIT]()
+[MIT](https://github.com/Haimantika/Mood-map/blob/main/LICENSE)
