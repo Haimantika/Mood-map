@@ -31,9 +31,9 @@ export function ShapeSelector({ onSelectShape, selectedShape }: ShapeSelectorPro
   )
 
   return (
-    <Card className="w-[600px] h-[600px] flex flex-col">
+    <Card className="w-[400px] h-[500px] flex flex-col">
       <CardHeader className="pb-4">
-        <CardTitle className="text-2xl">Mood Shapes</CardTitle>
+        <CardTitle className="text-xl">Shapes</CardTitle>
       </CardHeader>
       <CardContent className="flex-grow flex flex-col justify-between">
         <div className="grid gap-4">
@@ -52,7 +52,6 @@ export function ShapeSelector({ onSelectShape, selectedShape }: ShapeSelectorPro
                 />
                 <div className="text-left">
                   <div className="font-medium text-lg">{option.mood}</div>
-                  <div className="text-sm text-muted-foreground">{option.description}</div>
                 </div>
               </div>
             </Button>

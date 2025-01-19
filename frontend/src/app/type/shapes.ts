@@ -15,20 +15,33 @@ export type MoodShape =
 export interface MoodOption {
   mood: string
   shape: MoodShape
-  description: string
+  color: string
+}
+
+export interface Shape {
+  id: string
+  type: MoodShape
+  x: number
+  y: number
+  size: number
+  color: string
+  rotation: number
 }
 
 export const moodOptions: MoodOption[] = [
-  { mood: 'Happiness', shape: 'circle', description: 'Shape: Circle' },
-  { mood: 'Sadness', shape: 'teardrop', description: 'Shape: Teardrop' },
-  { mood: 'Fear', shape: 'triangle', description: 'Shape: Sharp Triangle' },
-  { mood: 'Disgust', shape: 'blob', description: 'Shape: Irregular Blob' },
-  { mood: 'Anger', shape: 'spike', description: 'Shape: Jagged Spike' },
-  { mood: 'Excitement', shape: 'starburst', description: 'Shape: Starburst' },
-  { mood: 'Confusion', shape: 'spiral', description: 'Shape: Spiral' },
-  { mood: 'Envy', shape: 'vine', description: 'Shape: Twisting Vine' },
-  { mood: 'Empathetic', shape: 'loop', description: 'Shape: Interlocking Loop' },
-  { mood: 'Sympathy', shape: 'wave', description: 'Shape: Gentle Wave' },
-  { mood: 'Triumph', shape: 'arrow', description: 'Shape: Upward Arrow' },
-  { mood: 'Satisfaction', shape: 'square', description: 'Shape: Square' }
+  { mood: 'Happiness', shape: 'circle',color: '#FFD700' },
+  { mood: 'Sadness', shape: 'teardrop', color: '#00008B' },
+  { mood: 'Fear', shape: 'triangle', color: '#4B0082' },
+  { mood: 'Disgust', shape: 'blob', color: '#808000' },
+  { mood: 'Anger', shape: 'spike',  color: '#FF0000' },
+  { mood: 'Excitement', shape: 'starburst', color: '#00FFFF' },
+  { mood: 'Confusion', shape: 'spiral', color: '#D3D3D3' },
+  { mood: 'Envy', shape: 'vine',  color: '#006400' },
+  { mood: 'Empathetic', shape: 'loop', color: '#FFDAB9' },
+  { mood: 'Sympathy', shape: 'wave',  color: '#ADD8E6' },
+  { mood: 'Triumph', shape: 'arrow',  color: '#FFD700' },
+  { mood: 'Satisfaction', shape: 'square', color: '#8B4513' }
 ]
+
+
+

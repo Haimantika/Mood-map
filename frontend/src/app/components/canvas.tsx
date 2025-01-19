@@ -1,165 +1,138 @@
 'use client'
 
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, forwardRef, useImperativeHandle } from 'react'
 import { Card } from './ui/card'
-import type { MoodShape } from '../type/shapes'
-
-interface Shape {
-  id: string
-  type: MoodShape
-  x: number
-  y: number
-  size: number
-}
+import type { MoodShape, Shape } from '../type/shapes'
 
 interface DrawingCanvasProps {
   selectedShape: MoodShape | null
+  selectedColor: string | null
   shapes: Shape[]
   setShapes: React.Dispatch<React.SetStateAction<Shape[]>>
-  onShapeAdded: () => void
+  onShapeAdded: (newShape: Shape) => void
+  onColorUpdate: (shapeId: string, color: string) => void
   onShapeSelected: (shapeId: string | null) => void
   selectedShapeId: string | null
 }
 
-export default function DrawingCanvas({ 
+export interface DrawingCanvasRef {
+  getCanvas: () => HTMLCanvasElement | null
+}
+
+const DrawingCanvas = forwardRef<DrawingCanvasRef, DrawingCanvasProps>(({ 
   selectedShape, 
+  selectedColor,
   shapes, 
   setShapes, 
   onShapeAdded, 
+  onColorUpdate,
   onShapeSelected,
   selectedShapeId 
-}: DrawingCanvasProps) {
+}, ref) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [isDragging, setIsDragging] = useState(false)
   const [lastMousePos, setLastMousePos] = useState<{ x: number; y: number } | null>(null)
+
+  useImperativeHandle(ref, () => ({
+    getCanvas: () => canvasRef.current
+  }))
 
   useEffect(() => {
     drawShapes()
   }, [shapes, selectedShapeId])
 
+  useEffect(() => {
+    if (selectedColor && selectedShapeId) {
+      onColorUpdate(selectedShapeId, selectedColor)
+    }
+  }, [selectedColor, selectedShapeId, onColorUpdate])
+
   const drawShape = (ctx: CanvasRenderingContext2D, shape: Shape, isSelected: boolean) => {
-    const { type, x, y, size } = shape
+    const { type, x, y, size, color, rotation } = shape
+    
+    ctx.save()
+    ctx.translate(x, y)
+    ctx.rotate(rotation * Math.PI / 180)
     
     ctx.beginPath()
-    ctx.strokeStyle = isSelected ? '#0000FF' : '#000000'
+    ctx.strokeStyle = isSelected ? '#0000FF' : color
+    ctx.fillStyle = color
     ctx.lineWidth = isSelected ? 3 : 2
 
     switch (type) {
       case 'circle':
-        ctx.arc(x, y, size / 2, 0, Math.PI * 2)
+        ctx.arc(0, 0, size / 2, 0, Math.PI * 2)
         break
       case 'teardrop':
-        ctx.moveTo(x, y - size/2)
-        ctx.bezierCurveTo(
-          x + size/2, y,
-          x + size/2, y + size/2,
-          x, y + size/2
-        )
-        ctx.bezierCurveTo(
-          x - size/2, y + size/2,
-          x - size/2, y,
-          x, y - size/2
-        )
+        ctx.moveTo(0, -size/2)
+        ctx.bezierCurveTo(size/2, 0, size/2, size/2, 0, size/2)
+        ctx.bezierCurveTo(-size/2, size/2, -size/2, 0, 0, -size/2)
         break
       case 'triangle':
-        ctx.moveTo(x, y - size/2)
-        ctx.lineTo(x + size/2, y + size/2)
-        ctx.lineTo(x - size/2, y + size/2)
+        ctx.moveTo(0, -size/2)
+        ctx.lineTo(size/2, size/2)
+        ctx.lineTo(-size/2, size/2)
         break
       case 'blob':
-        ctx.moveTo(x, y - size/2)
-        ctx.bezierCurveTo(
-          x + size/2, y - size/2,
-          x + size/2, y,
-          x + size/2 - 2, y + size/2 - 2
-        )
-        ctx.bezierCurveTo(
-          x, y + size/2,
-          x - size/2, y + size/2,
-          x - size/2, y
-        )
-        ctx.bezierCurveTo(
-          x - size/2, y - size/2,
-          x, y - size/2,
-          x, y - size/2
-        )
+        ctx.moveTo(0, -size/2)
+        ctx.bezierCurveTo(size/2, -size/2, size/2, 0, size/2 - 2, size/2 - 2)
+        ctx.bezierCurveTo(0, size/2, -size/2, size/2, -size/2, 0)
+        ctx.bezierCurveTo(-size/2, -size/2, 0, -size/2, 0, -size/2)
         break
       case 'spike':
-        ctx.moveTo(x, y - size/2)
-        ctx.lineTo(x + size/4, y)
-        ctx.lineTo(x, y + size/2)
-        ctx.lineTo(x - size/4, y)
+        ctx.moveTo(0, -size/2)
+        ctx.lineTo(size/4, 0)
+        ctx.lineTo(0, size/2)
+        ctx.lineTo(-size/4, 0)
         break
       case 'starburst':
         for (let i = 0; i < 8; i++) {
           const angle = i * Math.PI / 4
           const innerRadius = size / 6
           const outerRadius = size / 2
-          ctx.lineTo(
-            x + Math.cos(angle) * outerRadius,
-            y + Math.sin(angle) * outerRadius
-          )
-          ctx.lineTo(
-            x + Math.cos(angle + Math.PI / 8) * innerRadius,
-            y + Math.sin(angle + Math.PI / 8) * innerRadius
-          )
+          ctx.lineTo(Math.cos(angle) * outerRadius, Math.sin(angle) * outerRadius)
+          ctx.lineTo(Math.cos(angle + Math.PI / 8) * innerRadius, Math.sin(angle + Math.PI / 8) * innerRadius)
         }
         break
       case 'spiral':
         let angle = 0
         let radius = 0
-        ctx.moveTo(x, y)
+        ctx.moveTo(0, 0)
         for (let i = 0; i < 100; i++) {
           angle += 0.2
           radius += 0.05
-          ctx.lineTo(
-            x + Math.cos(angle) * radius * size / 12,
-            y + Math.sin(angle) * radius * size / 12
-          )
+          ctx.lineTo(Math.cos(angle) * radius * size / 12, Math.sin(angle) * radius * size / 12)
         }
         break
       case 'vine':
-        ctx.moveTo(x - size/2, y)
-        ctx.bezierCurveTo(
-          x - size/4, y - size/2,
-          x + size/4, y + size/2,
-          x + size/2, y
-        )
+        ctx.moveTo(-size/2, 0)
+        ctx.bezierCurveTo(-size/4, -size/2, size/4, size/2, size/2, 0)
         break
       case 'loop':
-        ctx.moveTo(x - size/4, y)
-        ctx.bezierCurveTo(
-          x - size/4, y - size/2,
-          x + size/4, y - size/2,
-          x + size/4, y
-        )
-        ctx.bezierCurveTo(
-          x + size/4, y + size/2,
-          x - size/4, y + size/2,
-          x - size/4, y
-        )
+        ctx.moveTo(-size/4, 0)
+        ctx.bezierCurveTo(-size/4, -size/2, size/4, -size/2, size/4, 0)
+        ctx.bezierCurveTo(size/4, size/2, -size/4, size/2, -size/4, 0)
         break
       case 'wave':
-        ctx.moveTo(x - size/2, y)
-        ctx.bezierCurveTo(
-          x - size/4, y - size/4,
-          x + size/4, y + size/4,
-          x + size/2, y
-        )
+        ctx.moveTo(-size/2, 0)
+        ctx.bezierCurveTo(-size/4, -size/4, size/4, size/4, size/2, 0)
         break
       case 'arrow':
-        ctx.moveTo(x - size/2, y)
-        ctx.lineTo(x + size/4, y)
-        ctx.lineTo(x, y - size/4)
-        ctx.moveTo(x + size/4, y)
-        ctx.lineTo(x, y + size/4)
+        ctx.moveTo(-size/2, 0)
+        ctx.lineTo(size/4, 0)
+        ctx.lineTo(0, -size/4)
+        ctx.moveTo(size/4, 0)
+        ctx.lineTo(0, size/4)
         break
       case 'square':
-        ctx.rect(x - size / 2, y - size / 2, size, size)
+        ctx.rect(-size / 2, -size / 2, size, size)
         break
     }
     ctx.closePath()
     ctx.stroke()
+    ctx.fill()
+    
+    ctx.restore()
   }
 
   const drawShapes = () => {
@@ -194,11 +167,12 @@ export default function DrawingCanvas({
         type: selectedShape,
         x,
         y,
-        size: 50
+        size: 50,
+        color: selectedColor || '#CCCCCC',
+        rotation: 0
       }
-      setShapes(prevShapes => [...prevShapes, newShape])
+      onShapeAdded(newShape)
       onShapeSelected(newShape.id)
-      onShapeAdded()
     } else {
       onShapeSelected(null)
     }
@@ -207,10 +181,10 @@ export default function DrawingCanvas({
   }
 
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!isDragging) return
+    if (!isDragging || !lastMousePos) return
 
     const canvas = canvasRef.current
-    if (!canvas || !lastMousePos) return
+    if (!canvas) return
 
     const rect = canvas.getBoundingClientRect()
     const x = e.clientX - rect.left
@@ -234,11 +208,11 @@ export default function DrawingCanvas({
   }
 
   return (
-    <Card className="w-[600px] h-[600px]">
+    <Card className="w-[600px] h-[400px]">
       <canvas
         ref={canvasRef}
         width={600}
-        height={600}
+        height={400}
         className="w-full h-full cursor-crosshair"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
@@ -247,9 +221,10 @@ export default function DrawingCanvas({
       />
     </Card>
   )
-}
+})
 
+DrawingCanvas.displayName = 'DrawingCanvas'
 
-
+export default DrawingCanvas
 
 
