@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef } from 'react'
 import DrawingCanvas, { DrawingCanvasRef } from './components/canvas'
 import { ShapeSelector } from './components/shape-selector'
 import { ColorSelector } from './components/color-selector'
@@ -8,13 +8,15 @@ import { Slider } from "./components/ui/slider"
 import { Button } from "./components/ui/button"
 import { Download } from 'lucide-react'
 import type { MoodShape, Shape } from './type/shapes'
+import { ColorPicker } from './components/color-picker'
 
 export default function Home() {
   const [selectedShape, setSelectedShape] = useState<MoodShape | null>(null)
   const [selectedColor, setSelectedColor] = useState<string | null>(null)
   const [shapes, setShapes] = useState<Shape[]>([])
   const [selectedShapeId, setSelectedShapeId] = useState<string | null>(null)
-  const [clipboard, setClipboard] = useState<Shape | null>(null)
+  const [backgroundColor, setBackgroundColor] = useState('#FFFFFF')
+
   const canvasRef = useRef<DrawingCanvasRef>(null)
 
   const handleShapeSelect = (shape: MoodShape) => {
@@ -69,54 +71,6 @@ export default function Home() {
     }
   }
 
-  const handleCopy = () => {
-    const selectedShape = shapes.find(shape => shape.id === selectedShapeId)
-    if (selectedShape) {
-      setClipboard({ ...selectedShape, id: Date.now().toString() })
-    }
-  }
-
-  const handlePaste = () => {
-    if (clipboard) {
-      const newShape = { ...clipboard, x: clipboard.x + 20, y: clipboard.y + 20, id: Date.now().toString() }
-      setShapes(prevShapes => [...prevShapes, newShape])
-      setSelectedShapeId(newShape.id)
-    }
-  }
-
-  const handleCut = () => {
-    const selectedShape = shapes.find(shape => shape.id === selectedShapeId)
-    if (selectedShape) {
-      setClipboard({ ...selectedShape, id: Date.now().toString() })
-      setShapes(prevShapes => prevShapes.filter(shape => shape.id !== selectedShapeId))
-      setSelectedShapeId(null)
-    }
-  }
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.ctrlKey || e.metaKey) {
-        switch (e.key.toLowerCase()) {
-          case 'c':
-            e.preventDefault()
-            handleCopy()
-            break
-          case 'v':
-            e.preventDefault()
-            handlePaste()
-            break
-          case 'x':
-            e.preventDefault()
-            handleCut()
-            break
-        }
-      }
-    }
-
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [shapes, selectedShapeId, clipboard])
-
   const selectedShapeObj = shapes.find(shape => shape.id === selectedShapeId)
   const selectedShapeSize = selectedShapeObj?.size || 50
   const selectedShapeRotation = selectedShapeObj?.rotation || 0
@@ -125,8 +79,12 @@ export default function Home() {
     <main className="flex min-h-screen items-center justify-center p-4">
       <div className="flex flex-col items-center gap-4">
         <div className="flex gap-4">
-          <ColorSelector onSelectColor={handleColorSelect} selectedColor={selectedColor} aria-label="Color Selector" />
+          <ColorSelector onSelectColor={handleColorSelect} selectedColor={selectedColor} />
           <div className="space-y-2">
+            <ColorPicker
+              color={backgroundColor}
+              onChange={setBackgroundColor}
+            />
             <DrawingCanvas 
               selectedShape={selectedShape} 
               selectedColor={selectedColor}
@@ -136,13 +94,12 @@ export default function Home() {
               onColorUpdate={handleColorUpdate}
               onShapeSelected={handleShapeSelected}
               selectedShapeId={selectedShapeId}
+              backgroundColor={backgroundColor}
               ref={canvasRef}
-              aria-label="Drawing Canvas"
             />
             <div className="flex items-center space-x-2">
-              <label htmlFor="size-slider" className="text-sm font-medium">Size:</label>
+              <span className="text-sm font-medium">Size:</span>
               <Slider
-                id="size-slider"
                 value={[selectedShapeSize]}
                 onValueChange={handleSizeChange}
                 min={10}
@@ -150,13 +107,11 @@ export default function Home() {
                 step={1}
                 className="w-[200px]"
                 disabled={!selectedShapeId}
-                aria-label="Size Slider"
               />
             </div>
             <div className="flex items-center space-x-2">
-              <label htmlFor="rotation-slider" className="text-sm font-medium">Rotation:</label>
+              <span className="text-sm font-medium">Rotation:</span>
               <Slider
-                id="rotation-slider"
                 value={[selectedShapeRotation]}
                 onValueChange={handleRotationChange}
                 min={0}
@@ -164,19 +119,19 @@ export default function Home() {
                 step={1}
                 className="w-[200px]"
                 disabled={!selectedShapeId}
-                aria-label="Rotation Slider"
               />
             </div>
-            <Button onClick={handleDownload} className="w-full" aria-label="Download Mood Map">
+            <Button onClick={handleDownload} className="w-full">
               <Download className="mr-2 h-4 w-4" /> Download Mood Map
             </Button>
           </div>
-          <ShapeSelector onSelectShape={handleShapeSelect} selectedShape={selectedShape} aria-label="Shape Selector" />
+          <ShapeSelector onSelectShape={handleShapeSelect} selectedShape={selectedShape} />
         </div>
       </div>
     </main>
   )
 }
+
 
 
 
