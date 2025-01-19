@@ -65,15 +65,118 @@ const DrawingCanvas = forwardRef<DrawingCanvasRef, DrawingCanvasProps>(({
       case 'circle':
         ctx.arc(0, 0, size / 2, 0, Math.PI * 2)
         break
+      case 'teardrop':
+        ctx.moveTo(0, -size/2)
+        ctx.bezierCurveTo(
+          size/2, 0,
+          size/2, size/2,
+          0, size/2
+        )
+        ctx.bezierCurveTo(
+          -size/2, size/2,
+          -size/2, 0,
+          0, -size/2
+        )
+        break
       case 'triangle':
         ctx.moveTo(0, -size/2)
         ctx.lineTo(size/2, size/2)
         ctx.lineTo(-size/2, size/2)
         break
+      case 'blob':
+        ctx.moveTo(0, -size/2)
+        ctx.bezierCurveTo(
+          size/2, -size/2,
+          size/2, 0,
+          size/2 - 2, size/2 - 2
+        )
+        ctx.bezierCurveTo(
+          0, size/2,
+          -size/2, size/2,
+          -size/2, 0
+        )
+        ctx.bezierCurveTo(
+          -size/2, -size/2,
+          0, -size/2,
+          0, -size/2
+        )
+        break
+      case 'spike':
+        ctx.moveTo(0, -size/2)
+        ctx.lineTo(size/4, 0)
+        ctx.lineTo(0, size/2)
+        ctx.lineTo(-size/4, 0)
+        break
+      case 'starburst':
+        for (let i = 0; i < 8; i++) {
+          const angle = i * Math.PI / 4
+          const innerRadius = size / 6
+          const outerRadius = size / 2
+          ctx.lineTo(
+            Math.cos(angle) * outerRadius,
+            Math.sin(angle) * outerRadius
+          )
+          ctx.lineTo(
+            Math.cos(angle + Math.PI / 8) * innerRadius,
+            Math.sin(angle + Math.PI / 8) * innerRadius
+          )
+        }
+        break
+      case 'spiral':
+        let angle = 0
+        let radius = 0
+        ctx.moveTo(0, 0)
+        for (let i = 0; i < 100; i++) {
+          angle += 0.2
+          radius += 0.05
+          ctx.lineTo(
+            Math.cos(angle) * radius * size / 12,
+            Math.sin(angle) * radius * size / 12
+          )
+        }
+        break
+      case 'vine':
+        ctx.moveTo(-size/2, 0)
+        ctx.bezierCurveTo(
+          -size/4, -size/2,
+          size/4, size/2,
+          size/2, 0
+        )
+        break
+      case 'loop':
+        ctx.moveTo(-size/4, 0)
+        ctx.bezierCurveTo(
+          -size/4, -size/2,
+          size/4, -size/2,
+          size/4, 0
+        )
+        ctx.bezierCurveTo(
+          size/4, size/2,
+          -size/4, size/2,
+          -size/4, 0
+        )
+        break
+      case 'wave':
+        ctx.moveTo(-size/2, 0)
+        ctx.bezierCurveTo(
+          -size/4, -size/4,
+          size/4, size/4,
+          size/2, 0
+        )
+        break
+      case 'arrow':
+        ctx.moveTo(-size/2, 0)
+        ctx.lineTo(size/4, 0)
+        ctx.lineTo(0, -size/4)
+        ctx.moveTo(size/4, 0)
+        ctx.lineTo(0, size/4)
+        break
       case 'square':
         ctx.rect(-size / 2, -size / 2, size, size)
         break
-      // Add other shape types here...
+      default:
+        console.warn(`Unsupported shape type: ${type}`)
+        break
     }
     ctx.closePath()
     ctx.stroke()
@@ -177,6 +280,8 @@ const DrawingCanvas = forwardRef<DrawingCanvasRef, DrawingCanvasProps>(({
 DrawingCanvas.displayName = 'DrawingCanvas'
 
 export default DrawingCanvas
+
+
 
 
 

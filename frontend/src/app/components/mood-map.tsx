@@ -10,6 +10,7 @@ export default function MoodMap() {
   const [currentMood, setCurrentMood] = useState<MoodOption>(moodOptions[0])
   const [shapes, setShapes] = useState<Shape[]>([])
   const [selectedShapeId, setSelectedShapeId] = useState<string | null>(null)
+  const [backgroundColor, setBackgroundColor] = useState('#FFFFFF')
 
   const handleShapeAdded = (newShape: Shape) => {
     setShapes(prevShapes => [...prevShapes, newShape])
@@ -45,6 +46,7 @@ export default function MoodMap() {
           onColorUpdate={handleColorUpdate}
           onShapeSelected={handleShapeSelected}
           selectedShapeId={selectedShapeId}
+          backgroundColor={backgroundColor}
         />
       </div>
     </div>
