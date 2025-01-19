@@ -30,7 +30,7 @@ export function ColorSelector({ onSelectColor, selectedColor }: ColorSelectorPro
   )
 
   return (
-    <Card className="w-full md:w-[200px] md:h-[600px] flex flex-col">
+    <Card className="w-full md:w-[250px] h-[500px] flex flex-col">
       <CardHeader className="pb-2">
         <CardTitle className="text-xl">Mood Colors</CardTitle>
       </CardHeader>
@@ -85,6 +85,8 @@ function getContrastColor(hexColor: string): string {
   const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
   return (yiq >= 128) ? 'black' : 'white';
 }
+
+
 
 
 

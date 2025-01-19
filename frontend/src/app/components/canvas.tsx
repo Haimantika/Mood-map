@@ -40,6 +40,25 @@ const DrawingCanvas = forwardRef<DrawingCanvasRef, DrawingCanvasProps>(({
   }))
 
   useEffect(() => {
+    const canvas = canvasRef.current
+    if (canvas) {
+      const resizeCanvas = () => {
+        const parent = canvas.parentElement
+        if (parent) {
+          const { width, height } = parent.getBoundingClientRect()
+          canvas.width = width
+          canvas.height = height
+          drawShapes()
+        }
+      }
+
+      resizeCanvas()
+      window.addEventListener('resize', resizeCanvas)
+      return () => window.removeEventListener('resize', resizeCanvas)
+    }
+  }, [])
+
+  useEffect(() => {
     drawShapes()
   }, [shapes, selectedShapeId, backgroundColor])
 
@@ -276,11 +295,9 @@ const DrawingCanvas = forwardRef<DrawingCanvasRef, DrawingCanvasProps>(({
   }
 
   return (
-    <Card className="w-full aspect-square max-w-[600px] max-h-[400px] mx-auto">
+    <Card className="w-full aspect-square max-w-[500px] max-h-[500px] mx-auto">
       <canvas
         ref={canvasRef}
-        width={600}
-        height={400}
         className="w-full h-full cursor-crosshair"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
@@ -297,6 +314,10 @@ const DrawingCanvas = forwardRef<DrawingCanvasRef, DrawingCanvasProps>(({
 DrawingCanvas.displayName = 'DrawingCanvas'
 
 export default DrawingCanvas
+
+
+
+
 
 
 

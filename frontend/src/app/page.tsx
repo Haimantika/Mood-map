@@ -145,8 +145,8 @@ export default function Home() {
 
   return (
     <main className="min-h-screen p-4 sm:p-6 md:p-8 mt-12">
-      <div className="max-w-4xl mx-auto space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-[200px,1fr,200px] gap-6 mt-8">
+      <div className="max-w-6xl mx-auto space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-[250px,1fr,250px] gap-6 mt-8">
           <ColorSelector onSelectColor={handleColorSelect} selectedColor={selectedColor} />
           <div className="space-y-4 order-first md:order-none">
             <ColorPicker
@@ -206,6 +206,7 @@ export default function Home() {
     </main>
   )
 }
+
 
 
 

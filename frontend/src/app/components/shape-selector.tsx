@@ -31,7 +31,7 @@ export function ShapeSelector({ onSelectShape, selectedShape }: ShapeSelectorPro
   )
 
   return (
-    <Card className="w-full md:w-[250px] md:h-[500px] flex flex-col">
+    <Card className="w-full md:w-[250px] h-[500px] flex flex-col">
       <CardHeader className="pb-2">
         <CardTitle className="text-xl">Mood Shapes</CardTitle>
       </CardHeader>
@@ -81,6 +81,7 @@ export function ShapeSelector({ onSelectShape, selectedShape }: ShapeSelectorPro
     </Card>
   )
 }
+
 
 
 
