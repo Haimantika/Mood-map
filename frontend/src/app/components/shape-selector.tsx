@@ -31,58 +31,57 @@ export function ShapeSelector({ onSelectShape, selectedShape }: ShapeSelectorPro
   )
 
   return (
-    <Card className="w-[400px] h-[500px] flex flex-col">
-      <CardHeader className="pb-4">
-        <CardTitle className="text-xl">Shapes</CardTitle>
+    <Card className="w-full md:w-[250px] md:h-[500px] flex flex-col">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-xl">Mood Shapes</CardTitle>
       </CardHeader>
       <CardContent className="flex-grow flex flex-col justify-between">
-        <div className="grid gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-1 gap-2">
           {currentShapes.map((option) => (
             <Button
               key={option.shape}
               variant={selectedShape === option.shape ? "default" : "outline"}
-              className="w-full justify-start p-4 h-auto"
+              className="w-full justify-start p-2 h-auto"
               onClick={() => onSelectShape(option.shape)}
             >
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
                 <ShapePreview 
                   shape={option.shape} 
-                  className="w-12 h-12" 
-                  size={48}
+                  className="w-8 h-8" 
+                  size={32}
                 />
                 <div className="text-left">
-                  <div className="font-medium text-lg">{option.mood}</div>
+                  <div className="font-medium text-sm">{option.mood}</div>
                 </div>
               </div>
             </Button>
           ))}
         </div>
-        <div className="flex justify-between mt-4">
+        <div className="flex justify-between mt-2">
           <Button 
             variant="outline" 
-            size="lg" 
+            size="sm"
             onClick={handlePrevPage}
             disabled={currentPage === 0}
             aria-label="Previous shapes"
           >
-            <ChevronUp className="h-6 w-6 mr-2" />
-            Previous
+            <ChevronUp className="h-4 w-4" />
           </Button>
           <Button 
             variant="outline" 
-            size="lg" 
+            size="sm"
             onClick={handleNextPage}
             disabled={currentPage === totalPages - 1}
             aria-label="Next shapes"
           >
-            Next
-            <ChevronDown className="h-6 w-6 ml-2" />
+            <ChevronDown className="h-4 w-4" />
           </Button>
         </div>
       </CardContent>
     </Card>
   )
 }
+
 
 
 

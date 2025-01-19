@@ -16,6 +16,7 @@ export default function Home() {
   const [shapes, setShapes] = useState<Shape[]>([])
   const [selectedShapeId, setSelectedShapeId] = useState<string | null>(null)
   const [backgroundColor, setBackgroundColor] = useState('#FFFFFF')
+  const [clipboard, setClipboard] = useState<Shape | null>(null)
 
   const canvasRef = useRef<DrawingCanvasRef>(null)
 
@@ -77,9 +78,57 @@ export default function Home() {
     setBackgroundColor('#FFFFFF')
   }
 
+  const handleCopy = () => {
+    if (selectedShapeId) {
+      const shapeToCopy = shapes.find(shape => shape.id === selectedShapeId)
+      if (shapeToCopy) {
+        setClipboard({ ...shapeToCopy, id: Date.now().toString() })
+      }
+    }
+  }
+
+  const handleCut = () => {
+    if (selectedShapeId) {
+      const shapeToCut = shapes.find(shape => shape.id === selectedShapeId)
+      if (shapeToCut) {
+        setClipboard({ ...shapeToCut, id: Date.now().toString() })
+        setShapes(prevShapes => prevShapes.filter(shape => shape.id !== selectedShapeId))
+        setSelectedShapeId(null)
+      }
+    }
+  }
+
+  const handlePaste = () => {
+    if (clipboard) {
+      const newShape = {
+        ...clipboard,
+        id: Date.now().toString(),
+        x: clipboard.x + 20,
+        y: clipboard.y + 20
+      }
+      setShapes(prevShapes => [...prevShapes, newShape])
+      setSelectedShapeId(newShape.id)
+    }
+  }
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey || e.metaKey) {
+        switch (e.key.toLowerCase()) {
+          case 'c':
+            e.preventDefault()
+            handleCopy()
+            break
+          case 'x':
+            e.preventDefault()
+            handleCut()
+            break
+          case 'v':
+            e.preventDefault()
+            handlePaste()
+            break
+        }
+      }
       if ((e.key === 'Delete' || e.key === 'Backspace') && selectedShapeId) {
         setShapes(prevShapes => prevShapes.filter(shape => shape.id !== selectedShapeId))
         setSelectedShapeId(null)
@@ -88,18 +137,18 @@ export default function Home() {
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [selectedShapeId])
+  }, [selectedShapeId, shapes, clipboard])
 
   const selectedShapeObj = shapes.find(shape => shape.id === selectedShapeId)
   const selectedShapeSize = selectedShapeObj?.size || 50
   const selectedShapeRotation = selectedShapeObj?.rotation || 0
 
   return (
-    <main className="flex min-h-screen items-center justify-center p-4">
-      <div className="flex flex-col items-center gap-4">
-        <div className="flex gap-4">
+    <main className="min-h-screen p-4 sm:p-6 md:p-8 mt-12">
+      <div className="max-w-4xl mx-auto space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-[200px,1fr,200px] gap-6 mt-8">
           <ColorSelector onSelectColor={handleColorSelect} selectedColor={selectedColor} />
-          <div className="space-y-2">
+          <div className="space-y-4 order-first md:order-none">
             <ColorPicker
               color={backgroundColor}
               onChange={setBackgroundColor}
@@ -116,29 +165,31 @@ export default function Home() {
               backgroundColor={backgroundColor}
               ref={canvasRef}
             />
-            <div className="flex items-center space-x-2">
-              <span className="text-sm font-medium">Size:</span>
-              <Slider
-                value={[selectedShapeSize]}
-                onValueChange={handleSizeChange}
-                min={10}
-                max={100}
-                step={1}
-                className="w-[200px]"
-                disabled={!selectedShapeId}
-              />
-            </div>
-            <div className="flex items-center space-x-2">
-              <span className="text-sm font-medium">Rotation:</span>
-              <Slider
-                value={[selectedShapeRotation]}
-                onValueChange={handleRotationChange}
-                min={0}
-                max={360}
-                step={1}
-                className="w-[200px]"
-                disabled={!selectedShapeId}
-              />
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2">
+                <span className="text-sm font-medium w-20">Size:</span>
+                <Slider
+                  value={[selectedShapeSize]}
+                  onValueChange={handleSizeChange}
+                  min={10}
+                  max={100}
+                  step={1}
+                  className="flex-1"
+                  disabled={!selectedShapeId}
+                />
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="text-sm font-medium w-20">Rotation:</span>
+                <Slider
+                  value={[selectedShapeRotation]}
+                  onValueChange={handleRotationChange}
+                  min={0}
+                  max={360}
+                  step={1}
+                  className="flex-1"
+                  disabled={!selectedShapeId}
+                />
+              </div>
             </div>
             <div className="flex space-x-2">
               <Button onClick={handleDownload} className="flex-1">
@@ -155,6 +206,12 @@ export default function Home() {
     </main>
   )
 }
+
+
+
+
+
+
 
 
 

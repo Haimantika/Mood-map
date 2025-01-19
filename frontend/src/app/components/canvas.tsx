@@ -261,8 +261,22 @@ const DrawingCanvas = forwardRef<DrawingCanvasRef, DrawingCanvasProps>(({
     setIsDragging(false)
   }
 
+  const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    const touch = e.touches[0]
+    handleMouseDown({ clientX: touch.clientX, clientY: touch.clientY } as React.MouseEvent<HTMLCanvasElement>)
+  }
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    const touch = e.touches[0]
+    handleMouseMove({ clientX: touch.clientX, clientY: touch.clientY } as React.MouseEvent<HTMLCanvasElement>)
+  }
+
+  const handleTouchEnd = () => {
+    handleMouseUp()
+  }
+
   return (
-    <Card className="w-[600px] h-[400px] relative">
+    <Card className="w-full aspect-square max-w-[600px] max-h-[400px] mx-auto">
       <canvas
         ref={canvasRef}
         width={600}
@@ -272,6 +286,9 @@ const DrawingCanvas = forwardRef<DrawingCanvasRef, DrawingCanvasProps>(({
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseOut={handleMouseUp}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       />
     </Card>
   )
@@ -280,6 +297,7 @@ const DrawingCanvas = forwardRef<DrawingCanvasRef, DrawingCanvasProps>(({
 DrawingCanvas.displayName = 'DrawingCanvas'
 
 export default DrawingCanvas
+
 
 
 

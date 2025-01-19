@@ -30,12 +30,12 @@ export function ColorSelector({ onSelectColor, selectedColor }: ColorSelectorPro
   )
 
   return (
-    <Card className="w-[400px] h-[500px] flex flex-col">
+    <Card className="w-full md:w-[200px] md:h-[600px] flex flex-col">
       <CardHeader className="pb-2">
-        <CardTitle className="text-xl">Colors</CardTitle>
+        <CardTitle className="text-xl">Mood Colors</CardTitle>
       </CardHeader>
       <CardContent className="flex-grow flex flex-col justify-between">
-        <div className="grid gap-2">
+        <div className="grid grid-cols-2 md:grid-cols-1 gap-2">
           {currentColors.map((option: MoodOption) => (
             <Button
               key={option.color}
@@ -85,4 +85,6 @@ function getContrastColor(hexColor: string): string {
   const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
   return (yiq >= 128) ? 'black' : 'white';
 }
+
+
 
