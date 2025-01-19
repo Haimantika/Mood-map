@@ -2,34 +2,24 @@
 
 import { Button } from "./ui/button"
 import { Card } from "./ui/card"
+import { MoodOption, moodOptions } from '../type/shapes'
 
 interface MoodControlsProps {
-  onColorChange: (color: string) => void
-  onShapeChange: (shape: 'square' | 'diamond' | 'circle') => void
+  onMoodChange: (mood: MoodOption) => void
 }
 
-export function MoodControls({ onColorChange, onShapeChange }: MoodControlsProps) {
-  const moodColors = [
-    { name: 'Happiness', color: '#FFD700', shape: 'square' },
-    { name: 'Anger', color: '#FF4444', shape: 'circle' },
-    { name: 'Sadness', color: '#4444FF', shape: 'diamond' },
-    { name: 'Empathy', color: '#44FF44', shape: 'square' },
-  ]
-
+export function MoodControls({ onMoodChange }: MoodControlsProps) {
   return (
     <Card className="p-4">
       <div className="grid gap-2">
-        {moodColors.map((mood) => (
+        {moodOptions.map((mood) => (
           <Button
-            key={mood.name}
-            onClick={() => {
-              onColorChange(mood.color)
-              onShapeChange(mood.shape as 'square' | 'diamond' | 'circle')
-            }}
+            key={mood.mood}
+            onClick={() => onMoodChange(mood)}
             className="justify-start"
             style={{ backgroundColor: mood.color }}
           >
-            {mood.name}
+            {mood.mood}
           </Button>
         ))}
       </div>
