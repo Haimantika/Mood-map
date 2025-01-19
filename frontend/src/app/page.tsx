@@ -125,7 +125,7 @@ export default function Home() {
     <main className="flex min-h-screen items-center justify-center p-4">
       <div className="flex flex-col items-center gap-4">
         <div className="flex gap-4">
-          <ColorSelector onSelectColor={handleColorSelect} selectedColor={selectedColor} />
+          <ColorSelector onSelectColor={handleColorSelect} selectedColor={selectedColor} aria-label="Color Selector" />
           <div className="space-y-2">
             <DrawingCanvas 
               selectedShape={selectedShape} 
@@ -137,10 +137,12 @@ export default function Home() {
               onShapeSelected={handleShapeSelected}
               selectedShapeId={selectedShapeId}
               ref={canvasRef}
+              aria-label="Drawing Canvas"
             />
             <div className="flex items-center space-x-2">
-              <span className="text-sm font-medium">Size:</span>
+              <label htmlFor="size-slider" className="text-sm font-medium">Size:</label>
               <Slider
+                id="size-slider"
                 value={[selectedShapeSize]}
                 onValueChange={handleSizeChange}
                 min={10}
@@ -148,11 +150,13 @@ export default function Home() {
                 step={1}
                 className="w-[200px]"
                 disabled={!selectedShapeId}
+                aria-label="Size Slider"
               />
             </div>
             <div className="flex items-center space-x-2">
-              <span className="text-sm font-medium">Rotation:</span>
+              <label htmlFor="rotation-slider" className="text-sm font-medium">Rotation:</label>
               <Slider
+                id="rotation-slider"
                 value={[selectedShapeRotation]}
                 onValueChange={handleRotationChange}
                 min={0}
@@ -160,13 +164,14 @@ export default function Home() {
                 step={1}
                 className="w-[200px]"
                 disabled={!selectedShapeId}
+                aria-label="Rotation Slider"
               />
             </div>
-            <Button onClick={handleDownload} className="w-full">
+            <Button onClick={handleDownload} className="w-full" aria-label="Download Mood Map">
               <Download className="mr-2 h-4 w-4" /> Download Mood Map
             </Button>
           </div>
-          <ShapeSelector onSelectShape={handleShapeSelect} selectedShape={selectedShape} />
+          <ShapeSelector onSelectShape={handleShapeSelect} selectedShape={selectedShape} aria-label="Shape Selector" />
         </div>
       </div>
     </main>
