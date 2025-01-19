@@ -1,12 +1,12 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import DrawingCanvas, { DrawingCanvasRef } from './components/canvas'
 import { ShapeSelector } from './components/shape-selector'
 import { ColorSelector } from './components/color-selector'
 import { Slider } from "./components/ui/slider"
 import { Button } from "./components/ui/button"
-import { Download } from 'lucide-react'
+import { Download, RefreshCw } from 'lucide-react'
 import type { MoodShape, Shape } from './type/shapes'
 import { ColorPicker } from './components/color-picker'
 
@@ -71,6 +71,25 @@ export default function Home() {
     }
   }
 
+  const handleResetCanvas = () => {
+    setShapes([])
+    setSelectedShapeId(null)
+    setBackgroundColor('#FFFFFF')
+  }
+
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.key === 'Delete' || e.key === 'Backspace') && selectedShapeId) {
+        setShapes(prevShapes => prevShapes.filter(shape => shape.id !== selectedShapeId))
+        setSelectedShapeId(null)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [selectedShapeId])
+
   const selectedShapeObj = shapes.find(shape => shape.id === selectedShapeId)
   const selectedShapeSize = selectedShapeObj?.size || 50
   const selectedShapeRotation = selectedShapeObj?.rotation || 0
@@ -121,9 +140,14 @@ export default function Home() {
                 disabled={!selectedShapeId}
               />
             </div>
-            <Button onClick={handleDownload} className="w-full">
-              <Download className="mr-2 h-4 w-4" /> Download Mood Map
-            </Button>
+            <div className="flex space-x-2">
+              <Button onClick={handleDownload} className="flex-1">
+                <Download className="mr-2 h-4 w-4" /> Download
+              </Button>
+              <Button onClick={handleResetCanvas} className="flex-1">
+                <RefreshCw className="mr-2 h-4 w-4" /> Reset
+              </Button>
+            </div>
           </div>
           <ShapeSelector onSelectShape={handleShapeSelect} selectedShape={selectedShape} />
         </div>
@@ -131,6 +155,7 @@ export default function Home() {
     </main>
   )
 }
+
 
 
 
